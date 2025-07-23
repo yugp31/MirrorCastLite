@@ -1,29 +1,28 @@
-name: Android CI
+workflows:
+  sample-workflow:
+    name: Codemagic Sample Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m2
 
-on:
-  push:
-    branches: [ main ]
+    environment:
+      vars:
+        JAVA_HOME: /Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+      android_signing:
+        - keystore_reference
 
-jobs:
-  build:
-    name: Build Debug APK
-    runs-on: ubuntu-latest
+    scripts:
+      - name: Build Release APK
+        script: |
+          ./gradlew clean
+          ./gradlew assembleRelease
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    artifacts:
+      - app/build/outputs/**/*.apk
 
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: 17
-
-    - name: Make Gradle executable
-      run: chmod +x ./gradlew
-
-    - name: Build APK
-      run: ./gradlew assembleDebug
+    publishing:
+      email:
+        recipients:
+          - your.email@example.com
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
