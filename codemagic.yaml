@@ -1,9 +1,25 @@
 workflows:
+  sample-workflow:
+    name: Codemagic Sample Workflow
+    max_build_duration: 120
+    instance_type: mac_mini_m2
 
-    sample-workflow:
+    environment:
+      vars:
+        JAVA_HOME: /Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+      android_signing:
+        - keystore_reference
 
-        name: Codemagic Sample Workflow
+    scripts:
+      - name: Build Release APK
+        script: |
+          ./gradlew clean
+          ./gradlew assembleRelease
 
-        max_build_duration: 120
+    artifacts:
+      - app/build/outputs/**/*.apk
 
-        instance_type: mac_mini_m2
+    publishing:
+      email:
+        recipients:
+          - your.email@example.com
